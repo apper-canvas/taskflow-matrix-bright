@@ -33,7 +33,7 @@ class TaskService {
     };
   }
 
-  async create(taskData) {
+async create(taskData) {
     await this.delay();
     const newTask = {
       Id: this.nextId++,
@@ -42,6 +42,7 @@ class TaskService {
       priority: taskData.priority || "medium",
       category: taskData.category,
       dueDate: taskData.dueDate ? taskData.dueDate.toISOString() : null,
+      notes: taskData.notes || "",
       createdAt: new Date().toISOString(),
       completedAt: null
     };
@@ -56,7 +57,7 @@ class TaskService {
     };
   }
 
-  async update(id, updates) {
+async update(id, updates) {
     await this.delay();
     const index = this.tasks.findIndex(t => t.Id === parseInt(id));
     if (index === -1) throw new Error("Task not found");
@@ -65,7 +66,8 @@ class TaskService {
       ...this.tasks[index],
       ...updates,
       dueDate: updates.dueDate ? updates.dueDate.toISOString() : this.tasks[index].dueDate,
-      completedAt: updates.completedAt ? updates.completedAt.toISOString() : this.tasks[index].completedAt
+      completedAt: updates.completedAt ? updates.completedAt.toISOString() : this.tasks[index].completedAt,
+      notes: updates.notes !== undefined ? updates.notes : this.tasks[index].notes
     };
     
     this.tasks[index] = updatedTask;

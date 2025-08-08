@@ -5,6 +5,7 @@ import Badge from "@/components/atoms/Badge";
 import Button from "@/components/atoms/Button";
 import ApperIcon from "@/components/ApperIcon";
 import TaskForm from "@/components/molecules/TaskForm";
+import ReactMarkdown from "react-markdown";
 import { format, isToday, isBefore, startOfDay } from "date-fns";
 
 const TaskItem = ({ 
@@ -94,7 +95,7 @@ const TaskItem = ({
           />
         </div>
         
-        {/* Task Content */}
+{/* Task Content */}
         <div className="flex-grow min-w-0">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 flex-grow">
@@ -131,7 +132,41 @@ const TaskItem = ({
                     {format(new Date(task.dueDate), "MMM d, yyyy")}
                   </div>
                 )}
+                
+                {task.notes && (
+                  <Badge variant="outline" size="sm">
+                    <ApperIcon name="FileText" className="h-3 w-3" />
+                    Notes
+                  </Badge>
+                )}
               </div>
+              
+              {/* Notes Section */}
+              {task.notes && (
+                <div className="mt-3 p-3 bg-neutral-50 rounded-lg border border-neutral-200">
+                  <div className="prose prose-sm max-w-none">
+                    <ReactMarkdown
+                      components={{
+                        h1: ({children}) => <h1 className="text-sm font-bold text-neutral-800 mb-1">{children}</h1>,
+                        h2: ({children}) => <h2 className="text-sm font-semibold text-neutral-800 mb-1">{children}</h2>,
+                        h3: ({children}) => <h3 className="text-xs font-semibold text-neutral-700 mb-1">{children}</h3>,
+                        p: ({children}) => <p className="text-xs text-neutral-600 mb-1 leading-relaxed">{children}</p>,
+                        ul: ({children}) => <ul className="list-disc list-inside text-xs text-neutral-600 space-y-0.5 mb-1">{children}</ul>,
+                        ol: ({children}) => <ol className="list-decimal list-inside text-xs text-neutral-600 space-y-0.5 mb-1">{children}</ol>,
+                        li: ({children}) => <li className="ml-1">{children}</li>,
+                        strong: ({children}) => <strong className="font-semibold text-neutral-800">{children}</strong>,
+                        em: ({children}) => <em className="italic text-neutral-700">{children}</em>,
+                        code: ({children}) => <code className="bg-neutral-200 text-neutral-800 px-1 py-0.5 rounded text-xs font-mono">{children}</code>,
+                        pre: ({children}) => <pre className="bg-neutral-800 text-neutral-100 p-2 rounded text-xs font-mono overflow-x-auto mb-1">{children}</pre>,
+                        blockquote: ({children}) => <blockquote className="border-l-2 border-neutral-300 pl-2 text-neutral-600 italic mb-1">{children}</blockquote>,
+                        a: ({children, href}) => <a href={href} className="text-primary-600 hover:text-primary-700 underline" target="_blank" rel="noopener noreferrer">{children}</a>
+                      }}
+                    >
+                      {task.notes}
+                    </ReactMarkdown>
+                  </div>
+                </div>
+              )}
             </div>
             
             {/* Actions */}

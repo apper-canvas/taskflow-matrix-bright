@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Button from "@/components/atoms/Button";
 import Input from "@/components/atoms/Input";
 import Select from "@/components/atoms/Select";
+import Textarea from "@/components/atoms/Textarea";
 import ApperIcon from "@/components/ApperIcon";
 import { format } from "date-fns";
 
@@ -12,34 +13,37 @@ const TaskForm = ({
   onCancel,
   isExpanded = false
 }) => {
-  const [formData, setFormData] = useState({
+const [formData, setFormData] = useState({
     title: "",
     priority: "medium",
     category: "",
-    dueDate: ""
+    dueDate: "",
+    notes: ""
   });
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  useEffect(() => {
+useEffect(() => {
     if (task) {
       setFormData({
         title: task.title,
         priority: task.priority,
         category: task.category,
-        dueDate: task.dueDate ? format(new Date(task.dueDate), "yyyy-MM-dd") : ""
+        dueDate: task.dueDate ? format(new Date(task.dueDate), "yyyy-MM-dd") : "",
+        notes: task.notes || ""
       });
     } else {
       setFormData({
         title: "",
         priority: "medium",
         category: categories[0]?.Id || "",
-        dueDate: ""
+        dueDate: "",
+        notes: ""
       });
     }
   }, [task, categories]);
   
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.title.trim()) return;
     
@@ -55,7 +59,8 @@ const TaskForm = ({
           title: "",
           priority: "medium",
           category: categories[0]?.Id || "",
-          dueDate: ""
+          dueDate: "",
+          notes: ""
         });
       }
     } finally {
@@ -103,7 +108,7 @@ const TaskForm = ({
           />
         </div>
         
-        {isExpanded && (
+{isExpanded && (
           <>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
@@ -149,6 +154,21 @@ const TaskForm = ({
                   onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
                 />
               </div>
+            </div>
+            
+            {/* Notes Section */}
+            <div>
+              <label htmlFor="notes" className="block text-sm font-medium text-neutral-700 mb-1">
+                Notes & Description
+              </label>
+              <Textarea
+                id="notes"
+                value={formData.notes}
+                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                placeholder="Add detailed notes, descriptions, or requirements for this task..."
+                rows={4}
+                showPreview={true}
+              />
             </div>
             
             {/* Quick Date Buttons */}
