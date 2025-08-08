@@ -1,0 +1,74 @@
+@import 'react-toastify/dist/ReactToastify.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  
+  .font-display {
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  }
+}
+
+@layer components {
+  .task-checkbox {
+    @apply relative w-5 h-5 border-2 border-neutral-300 rounded transition-all duration-200 cursor-pointer;
+  }
+  
+  .task-checkbox:checked {
+    @apply bg-accent-500 border-accent-500;
+  }
+  
+  .task-checkbox:checked::after {
+    content: '✓';
+    @apply absolute inset-0 flex items-center justify-center text-white text-xs font-bold;
+  }
+  
+  .priority-indicator {
+    @apply absolute left-0 top-0 bottom-0 w-1 rounded-l-xl;
+  }
+  
+  .priority-high {
+    @apply bg-red-500;
+  }
+  
+  .priority-medium {
+    @apply bg-yellow-500;
+  }
+  
+  .priority-low {
+    @apply bg-blue-500;
+  }
+  
+  .category-pill {
+    @apply px-2.5 py-1 rounded-full text-xs font-medium text-neutral-700 bg-opacity-60;
+  }
+}
+
+/* Toast customization */
+.Toastify__toast-container {
+  @apply font-body;
+}
+
+.Toastify__toast {
+  @apply rounded-xl shadow-lg;
+}
+
+.Toastify__toast--success {
+  @apply bg-accent-500 text-white;
+}
+
+.Toastify__toast--error {
+  @apply bg-red-500 text-white;
+}
+
+.Toastify__toast--info {
+  @apply bg-blue-500 text-white;
+}
+
+.Toastify__progress-bar {
+  @apply bg-white bg-opacity-30;
+}
