@@ -1,27 +1,26 @@
-import React, { useState, useEffect } from "react";
-import { useParams, useLocation } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useLocation, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import Header from "@/components/organisms/Header";
-import TaskList from "@/components/organisms/TaskList";
-import TaskForm from "@/components/molecules/TaskForm";
-import FilterBar from "@/components/molecules/FilterBar";
-import SearchBar from "@/components/molecules/SearchBar";
-import Button from "@/components/atoms/Button";
-import Loading from "@/components/ui/Loading";
-import Error from "@/components/ui/Error";
-import ApperIcon from "@/components/ApperIcon";
 import { taskService } from "@/services/api/taskService";
 import { categoryService } from "@/services/api/categoryService";
-import { isToday, isBefore, startOfDay } from "date-fns";
-
+import { isBefore, isToday, startOfDay } from "date-fns";
+import ApperIcon from "@/components/ApperIcon";
+import FilterBar from "@/components/molecules/FilterBar";
+import SearchBar from "@/components/molecules/SearchBar";
+import TaskForm from "@/components/molecules/TaskForm";
+import TaskList from "@/components/organisms/TaskList";
+import Header from "@/components/organisms/Header";
+import Loading from "@/components/ui/Loading";
+import Error from "@/components/ui/Error";
+import Button from "@/components/atoms/Button";
 const TasksPage = ({ filter: routeFilter }) => {
   const { categoryId } = useParams();
   const location = useLocation();
   
-  // Data state
+// Data state
   const [tasks, setTasks] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   
   // Filter state
@@ -32,7 +31,7 @@ const TasksPage = ({ filter: routeFilter }) => {
   const [showAddForm, setShowAddForm] = useState(false);
   
   // Load data
-  const loadData = async () => {
+const loadData = async () => {
     try {
       setLoading(true);
       setError("");
@@ -42,8 +41,8 @@ const TasksPage = ({ filter: routeFilter }) => {
         categoryService.getAll()
       ]);
       
-      setTasks(tasksData);
-      setCategories(categoriesData);
+      setTasks(tasksData || []);
+      setCategories(categoriesData || []);
     } catch (err) {
       setError("Failed to load tasks. Please try again.");
       console.error("Error loading data:", err);
@@ -55,56 +54,55 @@ const TasksPage = ({ filter: routeFilter }) => {
   useEffect(() => {
     loadData();
   }, []);
-  
-  // Filter tasks
-  const filteredTasks = tasks.filter(task => {
+// Filter tasks
+const filteredTasks = tasks.filter(task => {
     // Search filter
-    if (searchTerm && !task.title.toLowerCase().includes(searchTerm.toLowerCase())) {
+    if (searchTerm && !task.title_c.toLowerCase().includes(searchTerm.toLowerCase())) {
       return false;
     }
     
     // Category filter
-    if (selectedCategory && task.category !== selectedCategory) {
+    if (selectedCategory && task.category_c !== selectedCategory) {
       return false;
     }
     
     // Priority filter
-    if (priorityFilter && task.priority !== priorityFilter) {
+    if (priorityFilter && task.priority_c !== priorityFilter) {
       return false;
     }
     
     // Completion filter
-    if (!showCompleted && task.completed) {
+    if (!showCompleted && task.completed_c) {
       return false;
     }
     
     // Route-based filters
-    if (routeFilter === "today" && task.dueDate) {
-      return isToday(new Date(task.dueDate));
+    if (routeFilter === "today" && task.due_date_c) {
+      return isToday(new Date(task.due_date_c));
     }
     
-    if (routeFilter === "overdue" && task.dueDate) {
-      return isBefore(new Date(task.dueDate), startOfDay(new Date())) && !task.completed;
+    if (routeFilter === "overdue" && task.due_date_c) {
+      return isBefore(new Date(task.due_date_c), startOfDay(new Date())) && !task.completed_c;
     }
     
-    if (location.pathname === "/today" && task.dueDate) {
-      return isToday(new Date(task.dueDate));
+    if (location.pathname === "/today" && task.due_date_c) {
+      return isToday(new Date(task.due_date_c));
     }
     
-    if (location.pathname === "/overdue" && task.dueDate) {
-      return isBefore(new Date(task.dueDate), startOfDay(new Date())) && !task.completed;
+    if (location.pathname === "/overdue" && task.due_date_c) {
+      return isBefore(new Date(task.due_date_c), startOfDay(new Date())) && !task.completed_c;
     }
     
     return true;
   });
   
-  // Calculate stats
+// Calculate stats
   const stats = {
     total: tasks.length,
-    completed: tasks.filter(task => task.completed).length,
-    todayTotal: tasks.filter(task => task.dueDate && isToday(new Date(task.dueDate))).length,
-    todayCompleted: tasks.filter(task => task.dueDate && isToday(new Date(task.dueDate)) && task.completed).length,
-    overdue: tasks.filter(task => task.dueDate && isBefore(new Date(task.dueDate), startOfDay(new Date())) && !task.completed).length,
+    completed: tasks.filter(task => task.completed_c).length,
+    todayTotal: tasks.filter(task => task.due_date_c && isToday(new Date(task.due_date_c))).length,
+    todayCompleted: tasks.filter(task => task.due_date_c && isToday(new Date(task.due_date_c)) && task.completed_c).length,
+    overdue: tasks.filter(task => task.due_date_c && isBefore(new Date(task.due_date_c), startOfDay(new Date())) && !task.completed_c).length,
     todayProgress: 0
   };
   
@@ -113,84 +111,107 @@ const TasksPage = ({ filter: routeFilter }) => {
   }
   
   // Task operations
-  const handleAddTask = async (taskData) => {
+const handleAddTask = async (taskData) => {
     try {
       const newTask = await taskService.create({
-        ...taskData,
-        completed: false,
-        createdAt: new Date(),
-        completedAt: null
+        title_c: taskData.title,
+        completed_c: false,
+        priority_c: taskData.priority,
+        category_c: taskData.category,
+        due_date_c: taskData.dueDate,
+        notes_c: taskData.notes,
+        created_at_c: new Date(),
+        completed_at_c: null
       });
       
-      setTasks(prev => [newTask, ...prev]);
-      toast.success("Task added successfully! 🎉");
-      setShowAddForm(false);
+      if (newTask) {
+        setTasks(prev => [newTask, ...prev]);
+        toast.success("Task added successfully! 🎉");
+        setShowAddForm(false);
+      }
     } catch (err) {
       toast.error("Failed to add task");
       console.error("Error adding task:", err);
     }
   };
   
-  const handleToggleComplete = async (taskId, completed) => {
+const handleToggleComplete = async (taskId, completed) => {
     try {
       const updatedTask = await taskService.update(taskId, { 
-        completed,
-        completedAt: completed ? new Date() : null
+        completed_c: completed,
+        completed_at_c: completed ? new Date() : null
       });
       
-      setTasks(prev => prev.map(task => 
-        task.Id === taskId ? updatedTask : task
-      ));
-      
-      toast.success(completed ? "Task completed! Great job! 🎉" : "Task reopened");
+      if (updatedTask) {
+        setTasks(prev => prev.map(task => 
+          task.Id === taskId ? updatedTask : task
+        ));
+        
+        toast.success(completed ? "Task completed! Great job! 🎉" : "Task reopened");
+      }
     } catch (err) {
       toast.error("Failed to update task");
       console.error("Error updating task:", err);
     }
   };
   
-  const handleEditTask = async (taskId, taskData) => {
+const handleEditTask = async (taskId, taskData) => {
     try {
-      const updatedTask = await taskService.update(taskId, taskData);
+      const updateData = {
+        title_c: taskData.title,
+        priority_c: taskData.priority,
+        category_c: taskData.category,
+        due_date_c: taskData.dueDate,
+        notes_c: taskData.notes
+      };
       
-      setTasks(prev => prev.map(task => 
-        task.Id === taskId ? updatedTask : task
-      ));
+      const updatedTask = await taskService.update(taskId, updateData);
       
-      toast.success("Task updated successfully! 📝");
+      if (updatedTask) {
+        setTasks(prev => prev.map(task => 
+          task.Id === taskId ? updatedTask : task
+        ));
+        
+        toast.success("Task updated successfully! 📝");
+      }
     } catch (err) {
       toast.error("Failed to update task");
       console.error("Error updating task:", err);
     }
   };
   
-  const handleDeleteTask = async (taskId) => {
+const handleDeleteTask = async (taskId) => {
     if (!window.confirm("Are you sure you want to delete this task?")) return;
     
     try {
-      await taskService.delete(taskId);
-      setTasks(prev => prev.filter(task => task.Id !== taskId));
-      toast.success("Task deleted successfully");
+      const result = await taskService.delete(taskId);
+      if (result) {
+        setTasks(prev => prev.filter(task => task.Id !== taskId));
+        toast.success("Task deleted successfully");
+      }
     } catch (err) {
       toast.error("Failed to delete task");
       console.error("Error deleting task:", err);
     }
   };
-  
-  const handleBulkDelete = async (taskIds) => {
+const handleBulkDelete = async (taskIds) => {
     if (!window.confirm(`Are you sure you want to delete ${taskIds.length} tasks?`)) return;
     
     try {
-      await Promise.all(taskIds.map(id => taskService.delete(id)));
-      setTasks(prev => prev.filter(task => !taskIds.includes(task.Id)));
-      toast.success(`${taskIds.length} tasks deleted successfully`);
+      const results = await Promise.all(taskIds.map(id => taskService.delete(id)));
+      const successfulDeletions = results.filter(result => result === true);
+      
+      if (successfulDeletions.length > 0) {
+        setTasks(prev => prev.filter(task => !taskIds.includes(task.Id)));
+        toast.success(`${successfulDeletions.length} tasks deleted successfully`);
+      }
     } catch (err) {
       toast.error("Failed to delete tasks");
       console.error("Error deleting tasks:", err);
     }
   };
   
-  if (loading) return <Loading />;
+if (loading) return <Loading />;
   if (error) return <Error message={error} onRetry={loadData} />;
   
   return (

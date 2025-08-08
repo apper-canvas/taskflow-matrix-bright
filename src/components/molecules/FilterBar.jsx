@@ -56,7 +56,7 @@ const FilterBar = ({
           </Badge>
           {categories.map((category) => (
             <Badge
-              key={category.Id}
+key={category.Id}
               variant={selectedCategory === category.Id ? "primary" : category.name.toLowerCase()}
               className="cursor-pointer hover:scale-105 transition-transform"
               onClick={() => onCategoryChange(category.Id)}

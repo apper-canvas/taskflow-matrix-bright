@@ -20,13 +20,13 @@ const TaskItem = ({
   const [isEditing, setIsEditing] = useState(false);
   const [isCompleting, setIsCompleting] = useState(false);
   
-  const category = categories.find(cat => cat.Id === task.category);
-  const isOverdue = task.dueDate && isBefore(new Date(task.dueDate), startOfDay(new Date())) && !task.completed;
-  const isDueToday = task.dueDate && isToday(new Date(task.dueDate));
+const category = categories.find(cat => cat.Id === task.category_c);
+const isOverdue = task.due_date_c && isBefore(new Date(task.due_date_c), startOfDay(new Date())) && !task.completed_c;
+  const isDueToday = task.due_date_c && isToday(new Date(task.due_date_c));
   
   const handleToggleComplete = async () => {
     setIsCompleting(true);
-    await onToggleComplete(task.Id, !task.completed);
+await onToggleComplete(task.Id, !task.completed_c);
     setIsCompleting(false);
   };
   
@@ -36,16 +36,17 @@ const TaskItem = ({
   };
   
   const getPriorityColor = () => {
-    switch (task.priority) {
+switch (task.priority_c) {
       case "high": return "border-l-red-500";
       case "medium": return "border-l-yellow-500";
       case "low": return "border-l-blue-500";
+      case "urgent": return "border-l-red-600";
       default: return "border-l-neutral-300";
     }
   };
   
-  const getDueDateColor = () => {
-    if (!task.dueDate) return "text-neutral-500";
+const getDueDateColor = () => {
+    if (!task.due_date_c) return "text-neutral-500";
     if (isOverdue) return "text-red-600";
     if (isDueToday) return "text-amber-600";
     return "text-neutral-600";
@@ -82,7 +83,7 @@ const TaskItem = ({
         ${task.completed ? "opacity-75" : ""}
         ${isSelected ? "ring-2 ring-primary-500 ring-opacity-50" : ""}
       `}
-      onClick={() => onSelect && onSelect(task.Id)}
+onClick={() => onSelect && onSelect(task.Id)}
     >
       <div className="flex items-start gap-3">
         {/* Checkbox */}
@@ -101,13 +102,13 @@ const TaskItem = ({
             <div className="min-w-0 flex-grow">
               <h3 className={`
                 font-medium text-neutral-900 break-words transition-all duration-200
-                ${task.completed ? "line-through text-neutral-500" : ""}
+${task.completed_c ? "line-through text-neutral-500" : ""}
               `}>
-                {task.title}
+{task.title_c}
               </h3>
               
               <div className="flex flex-wrap items-center gap-2 mt-2">
-                {category && (
+{category && (
                   <Badge variant={category.name.toLowerCase()} size="sm">
                     {category.name}
                   </Badge>
@@ -116,24 +117,25 @@ const TaskItem = ({
                 <Badge variant="default" size="sm">
                   <ApperIcon 
                     name={
-                      task.priority === "high" ? "AlertTriangle" :
-                      task.priority === "medium" ? "Minus" : "ArrowDown"
+                      task.priority_c === "high" ? "AlertTriangle" :
+                      task.priority_c === "urgent" ? "AlertTriangle" :
+                      task.priority_c === "medium" ? "Minus" : "ArrowDown"
                     } 
                     className="h-3 w-3" 
                   />
-                  {task.priority}
+                  {task.priority_c}
                 </Badge>
                 
-                {task.dueDate && (
+                {task.due_date_c && (
                   <div className={`flex items-center gap-1 text-xs ${getDueDateColor()}`}>
                     <ApperIcon name="Calendar" className="h-3 w-3" />
                     {isOverdue && <span className="font-medium">Overdue:</span>}
                     {isDueToday && !isOverdue && <span className="font-medium">Today:</span>}
-                    {format(new Date(task.dueDate), "MMM d, yyyy")}
+                    {format(new Date(task.due_date_c), "MMM d, yyyy")}
                   </div>
                 )}
                 
-                {task.notes && (
+                {task.notes_c && (
                   <Badge variant="outline" size="sm">
                     <ApperIcon name="FileText" className="h-3 w-3" />
                     Notes
@@ -142,7 +144,7 @@ const TaskItem = ({
               </div>
               
               {/* Notes Section */}
-              {task.notes && (
+{task.notes_c && (
                 <div className="mt-3 p-3 bg-neutral-50 rounded-lg border border-neutral-200">
                   <div className="prose prose-sm max-w-none">
                     <ReactMarkdown
@@ -162,7 +164,7 @@ const TaskItem = ({
                         a: ({children, href}) => <a href={href} className="text-primary-600 hover:text-primary-700 underline" target="_blank" rel="noopener noreferrer">{children}</a>
                       }}
                     >
-                      {task.notes}
+                      {task.notes_c}
                     </ReactMarkdown>
                   </div>
                 </div>
@@ -187,7 +189,7 @@ const TaskItem = ({
                   variant="ghost"
                   size="sm"
                   onClick={(e) => {
-                    e.stopPropagation();
+e.stopPropagation();
                     onDelete(task.Id);
                   }}
                   className="text-red-600 hover:text-red-700 hover:bg-red-50"

@@ -31,7 +31,7 @@ const TaskList = ({
     if (selectedTasks.size === tasks.length) {
       setSelectedTasks(new Set());
     } else {
-      setSelectedTasks(new Set(tasks.map(task => task.Id)));
+setSelectedTasks(new Set(tasks.map(task => task.Id)));
     }
   };
   
@@ -42,26 +42,26 @@ const TaskList = ({
   };
   
   const sortTasks = (tasks) => {
-    return [...tasks].sort((a, b) => {
+return [...tasks].sort((a, b) => {
       let aValue, bValue;
       
       switch (sortBy) {
         case "title":
-          aValue = a.title.toLowerCase();
-          bValue = b.title.toLowerCase();
+          aValue = a.title_c.toLowerCase();
+          bValue = b.title_c.toLowerCase();
           break;
         case "priority":
-          const priorityOrder = { high: 3, medium: 2, low: 1 };
-          aValue = priorityOrder[a.priority] || 0;
-          bValue = priorityOrder[b.priority] || 0;
+          const priorityOrder = { urgent: 4, high: 3, medium: 2, low: 1 };
+          aValue = priorityOrder[a.priority_c] || 0;
+          bValue = priorityOrder[b.priority_c] || 0;
           break;
         case "dueDate":
-          aValue = a.dueDate ? new Date(a.dueDate).getTime() : Infinity;
-          bValue = b.dueDate ? new Date(b.dueDate).getTime() : Infinity;
+          aValue = a.due_date_c ? new Date(a.due_date_c).getTime() : Infinity;
+          bValue = b.due_date_c ? new Date(b.due_date_c).getTime() : Infinity;
           break;
         case "created":
-          aValue = new Date(a.createdAt).getTime();
-          bValue = new Date(b.createdAt).getTime();
+          aValue = new Date(a.created_at_c).getTime();
+          bValue = new Date(b.created_at_c).getTime();
           break;
         default:
           return 0;
@@ -186,7 +186,7 @@ const TaskList = ({
           <AnimatePresence>
             {incompleteTasks.map((task) => (
               <TaskItem
-                key={task.Id}
+key={task.Id}
                 task={task}
                 categories={categories}
                 onToggleComplete={onToggleComplete}
@@ -208,7 +208,7 @@ const TaskList = ({
             Completed Tasks ({completedTasks.length})
           </h3>
           <AnimatePresence>
-            {completedTasks.map((task) => (
+{completedTasks.map((task) => (
               <TaskItem
                 key={task.Id}
                 task={task}
